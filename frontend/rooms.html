@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AnonChat | Browse Rooms</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: { "primary": "#1f68f9", "background-dark": "#0f1623", "accent-neon": "#39ff14" },
+        fontFamily: { "display": ["Space Grotesk","sans-serif"] },
+      },
+    },
+  }
+</script>
+<style>
+  .glass-card { background: rgba(31,104,249,0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+  .glass-card:hover { border-color: rgba(31,104,249,0.4); background: rgba(31,104,249,0.08); }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body class="bg-background-dark font-display text-slate-100 min-h-screen">
+<div class="relative flex min-h-screen flex-col overflow-x-hidden">
+
+  <header class="sticky top-0 z-50 w-full border-b border-slate-800 bg-background-dark/80 backdrop-blur-md px-6 lg:px-20 py-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <a class="flex items-center gap-3 text-primary hover:opacity-80 transition-opacity" href="index.html">
+        <div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+          <span class="material-symbols-outlined">shield_person</span>
+        </div>
+        <h2 class="text-xl font-bold tracking-tight text-white">AnonChat</h2>
+      </a>
+      <div class="flex items-center gap-6">
+        <div class="hidden md:flex flex-col items-end">
+          <span id="header-username" class="text-sm font-bold text-slate-100 leading-none">—</span>
+          <span class="text-xs text-accent-neon flex items-center gap-1 font-medium">
+            <span class="size-1.5 rounded-full bg-accent-neon"></span> Online
+          </span>
+        </div>
+        <div class="h-10 w-10 rounded-full border-2 border-primary/30 p-0.5 flex items-center justify-center bg-slate-800">
+          <span id="avatar-initials" class="text-xs font-bold text-primary">??</span>
+        </div>
+        <button onclick="window.location.href='create-room.html'" class="bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-primary/20">
+          <span class="material-symbols-outlined text-lg">add_circle</span>
+          <span>Create Room</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto w-full px-6 lg:px-20 py-8 flex-1">
+    <!-- Search & Filters -->
+    <section class="mb-10">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="flex-1 max-w-2xl">
+          <div class="relative group">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+            <input id="search-input" onkeyup="filterRooms()" class="w-full bg-slate-800/50 border border-slate-700 rounded-xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-slate-100 placeholder:text-slate-500" placeholder="Search rooms, topics, or keywords..."/>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
+          <span class="text-xs font-bold text-slate-400 mr-2 uppercase tracking-widest">Trending:</span>
+          <span onclick="setSearch('#CryptoDebate')" class="cursor-pointer px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-bold whitespace-nowrap hover:bg-primary/20 transition">#CryptoDebate</span>
+          <span onclick="setSearch('#AIethics')" class="cursor-pointer px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-bold whitespace-nowrap hover:bg-primary/20 transition">#AIethics</span>
+          <span onclick="setSearch('#LateNight')" class="cursor-pointer px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-bold whitespace-nowrap hover:bg-primary/20 transition">#LateNight</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category Tabs -->
+    <nav class="mb-8 border-b border-slate-800 overflow-x-auto no-scrollbar">
+      <div class="flex gap-8 min-w-max" id="category-tabs">
+        <button onclick="setCategory('all')" data-cat="all" class="tab-btn pb-4 text-primary border-b-2 border-primary font-bold text-sm flex items-center gap-2">
+          <span class="material-symbols-outlined text-lg">grid_view</span> All Rooms
+        </button>
+        <button onclick="setCategory('technology')" data-cat="technology" class="tab-btn pb-4 text-slate-500 hover:text-slate-200 font-medium text-sm transition-colors flex items-center gap-2">
+          <span class="material-symbols-outlined text-lg">memory</span> Technology
+        </button>
+        <button onclick="setCategory('gaming')" data-cat="gaming" class="tab-btn pb-4 text-slate-500 hover:text-slate-200 font-medium text-sm transition-colors flex items-center gap-2">
+          <span class="material-symbols-outlined text-lg">sports_esports</span> Gaming
+        </button>
+        <button onclick="setCategory('music')" data-cat="music" class="tab-btn pb-4 text-slate-500 hover:text-slate-200 font-medium text-sm transition-colors flex items-center gap-2">
+          <span class="material-symbols-outlined text-lg">headphones</span> Music
+        </button>
+        <button onclick="setCategory('politics')" data-cat="politics" class="tab-btn pb-4 text-slate-500 hover:text-slate-200 font-medium text-sm transition-colors flex items-center gap-2">
+          <span class="material-symbols-outlined text-lg">policy</span> Politics
+        </button>
+        <button onclick="setCategory('science')" data-cat="science" class="tab-btn pb-4 text-slate-500 hover:text-slate-200 font-medium text-sm transition-colors flex items-center gap-2">
+          <span class="material-symbols-outlined text-lg">science</span> Science
+        </button>
+        <button onclick="setCategory('random')" data-cat="random" class="tab-btn pb-4 text-slate-500 hover:text-slate-200 font-medium text-sm transition-colors flex items-center gap-2">
+          <span class="material-symbols-outlined text-lg">shuffle</span> Random
+        </button>      </div>
+    </nav>
+
+    <!-- Rooms Grid -->
+    <div id="rooms-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="glass-card rounded-xl p-8 col-span-3 flex justify-center">
+        <span class="material-symbols-outlined text-slate-600 animate-spin text-4xl">progress_activity</span>
+      </div>
+    </div>
+
+    <div class="mt-12 flex justify-center">
+      <button id="load-more-btn" onclick="loadMoreRooms()" class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors py-3 px-8 rounded-full border border-slate-800 bg-slate-800/20">
+        <span class="text-sm font-bold">Load More Rooms</span>
+        <span class="material-symbols-outlined text-lg">keyboard_arrow_down</span>
+      </button>
+    </div>
+  </main>
+
+  <footer class="border-t border-slate-800 px-6 lg:px-20 py-8 text-center">
+    <p class="text-slate-500 text-xs font-medium tracking-wide uppercase">AnonChat © 2025 • Encrypted • Anonymous • Powered by CipherMesh</p>
+  </footer>
+</div>
+
+<script>
+  const API = 'http://localhost:8080';
+  let allRooms = [];
+  let currentCategory = 'all';
+  let page = 0;
+
+  const FALLBACK_ROOMS = [
+    { id: 1, name: 'Quantum Computing 101', description: 'Discussing the latest breakthroughs in superposition and hardware roadmap.', category: 'Technology', onlineCount: 1200, isPrivate: false, tags: ['#technology','#physics','#learning'] },
+    { id: 2, name: 'Cyberpunk Night City RP', description: 'The core runners only. High-stakes roleplay in the neon sprawl of 2077.', category: 'Gaming', onlineCount: 4800, isPrivate: true, tags: ['#gaming','#rp','#neon'] },
+    { id: 3, name: 'Lofi Beats & Code', description: 'Chill room for developers to hang out, share snippets, and listen to some beats.', category: 'Music', onlineCount: 852, isPrivate: false, tags: ['#music','#chill','#coding'] },
+    { id: 4, name: 'Global Geopolitics', description: 'Analyzing recent events in Eastern Europe and South East Asia. Experts welcome.', category: 'Politics', onlineCount: 2100, isPrivate: false, tags: ['#politics','#debate'] },
+    { id: 5, name: 'Deep Space Mysteries', description: 'Latest JWST images discussion and dark matter theories. Stay curious.', category: 'Science', onlineCount: 126, isPrivate: false, tags: ['#science','#space'] },
+    { id: 6, name: 'Random Thoughts Chat', description: 'Anything goes. No specific topic, just vibes and random conversations.', category: 'Random', onlineCount: 5200, isPrivate: false, tags: ['#random','#vibe'] },
+    { id: 7, name: 'AI Ethics Roundtable', description: 'What happens when machines start making moral decisions?', category: 'Technology', onlineCount: 930, isPrivate: false, tags: ['#AIethics','#technology'] },
+    { id: 8, name: 'Crypto Debate Floor', description: 'Bull vs bear, DeFi vs CeFi, everything crypto.', category: 'Technology', onlineCount: 3100, isPrivate: false, tags: ['#CryptoDebate','#finance'] },
+    { id: 9, name: 'Late Night Lounge', description: 'When it is 2am and you just want to talk to someone.', category: 'Random', onlineCount: 450, isPrivate: false, tags: ['#LateNight','#vibe'] },
+  ];
+
+  async function loadRooms() {
+    try {
+      const token = sessionStorage.getItem('token');
+      if (!token || token === 'offline-demo') throw new Error('offline');
+
+      // category is already lowercase (matches DB); send to backend for server-side filter
+      const catParam = currentCategory !== 'all' ? `&category=${encodeURIComponent(currentCategory)}` : '';
+      const res = await fetch(`${API}/api/v1/rooms?page=${page}&size=9${catParam}`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (!res.ok) throw new Error();
+      const json = await res.json();
+      const content = json.data?.content || [];
+      const mapped = content.map(r => ({
+        id: r.id,                          // UUID string — safe to use in onclick with quotes
+        name: r.name,
+        description: r.description || '',
+        category: r.category,              // lowercase from DB
+        onlineCount: r.memberCount || 0,
+        isPrivate: r.private || false,
+        tags: (r.tags || []).map(t => '#' + t),
+      }));
+      allRooms = page === 0 ? mapped : [...allRooms, ...mapped];
+    } catch {
+      if (page === 0) allRooms = FALLBACK_ROOMS;
+    }
+    renderRooms();
+  }
+
+  function renderRooms() {
+    const search = document.getElementById('search-input').value.toLowerCase();
+    let filtered = allRooms.filter(r => {
+      // Compare lowercase so 'Technology' tab matches 'technology' from DB
+      const matchCat = currentCategory === 'all' || r.category.toLowerCase() === currentCategory.toLowerCase();
+      const matchSearch = !search || r.name.toLowerCase().includes(search) || r.description.toLowerCase().includes(search) || (r.tags || []).some(t => t.toLowerCase().includes(search));
+      return matchCat && matchSearch;
+    });
+
+    const grid = document.getElementById('rooms-grid');
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div class="col-span-3 text-center py-20 text-slate-500">
+        <span class="material-symbols-outlined text-6xl mb-4 block">search_off</span>
+        <p class="text-lg font-medium">No rooms found</p>
+        <p class="text-sm mt-1">Try a different search or <a href="create-room.html" class="text-primary hover:underline">create one</a></p>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = filtered.map(room => `
+      <div class="glass-card rounded-xl p-6 flex flex-col justify-between transition-all group ${room.isPrivate ? 'border-primary/40 bg-primary/5' : ''}">
+        <div>
+          <div class="flex justify-between items-start mb-4">
+            <span class="px-2.5 py-1 rounded bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-tighter flex items-center gap-1.5 border border-red-500/20">
+              <span class="size-1.5 rounded-full bg-red-500 animate-pulse"></span>
+              ${formatCount(room.onlineCount)} Live
+            </span>
+            <span class="material-symbols-outlined ${room.isPrivate ? 'text-primary' : 'text-slate-500'} text-xl">${room.isPrivate ? 'lock' : 'lock_open'}</span>
+          </div>
+          <h3 class="text-xl font-bold mb-1 ${room.isPrivate ? 'text-primary' : 'group-hover:text-primary'} transition-colors">${room.name}</h3>
+          <p class="text-slate-400 text-sm mb-4 line-clamp-2">${room.description}</p>
+          <div class="flex flex-wrap gap-2 mb-6">
+            ${(room.tags || []).map(t => `<span class="text-[11px] font-bold text-primary/80">${t}</span>`).join('')}
+          </div>
+        </div>
+        <button onclick="joinRoom('${room.id}', '${escapeJs(room.name)}')" class="w-full ${room.isPrivate ? 'bg-primary shadow-lg shadow-primary/20' : 'bg-slate-800 hover:bg-primary border border-slate-700 group-hover:border-primary'} py-3 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2">
+          ${room.isPrivate ? '<span class="material-symbols-outlined text-sm">lock_open</span> Unlock &amp; Join' : 'Join Room'}
+        </button>
+      </div>
+    `).join('');
+  }
+
+  async function joinRoom(id, name) {
+    const token = sessionStorage.getItem('token');
+    if (token && token !== 'offline-demo') {
+      try {
+        await fetch(`${API}/api/v1/rooms/${id}/join`, {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        });
+      } catch {}
+    }
+    sessionStorage.setItem('currentRoomId', id);
+    sessionStorage.setItem('currentRoomName', name);
+    window.location.href = `chat.html?roomId=${encodeURIComponent(id)}&roomName=${encodeURIComponent(name)}`;
+  }
+
+  function setCategory(cat) {
+    currentCategory = cat;
+    page = 0; // reset to first page when switching categories
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      const isActive = btn.dataset.cat === cat;
+      btn.className = `tab-btn pb-4 font-${isActive ? 'bold' : 'medium'} text-sm flex items-center gap-2 transition-colors ${isActive ? 'text-primary border-b-2 border-primary' : 'text-slate-500 hover:text-slate-200'}`;
+    });
+    loadRooms(); // re-fetch with new category
+  }
+
+  function filterRooms() { renderRooms(); }
+  function setSearch(tag) { document.getElementById('search-input').value = tag; renderRooms(); }
+  function formatCount(n) { return n >= 1000 ? (n/1000).toFixed(1) + 'k' : n; }
+  function escapeJs(str) { return (str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+
+  async function loadMoreRooms() {
+    page++;
+    await loadRooms();
+  }
+
+  // Guard: must be logged in
+  if (!sessionStorage.getItem('token')) {
+    window.location.href = 'identity.html';
+  } else {
+    const username = sessionStorage.getItem('username') || '—';
+    document.getElementById('header-username').textContent = username;
+    document.getElementById('avatar-initials').textContent = username.slice(0, 2).toUpperCase();
+    loadRooms();
+  }
+</script>
+</body>
+</html>

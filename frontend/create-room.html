@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AnonChat | Create Room</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: { extend: { colors: { "primary": "#1f68f9", "background-dark": "#0f1623" }, fontFamily: { "display": ["Space Grotesk"] } } }
+  }
+</script>
+<style>
+  .glass-panel { background: rgba(31,41,55,0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+  .neon-glow { box-shadow: 0 0 15px rgba(31,104,249,0.4), 0 0 30px rgba(31,104,249,0.2); }
+</style>
+</head>
+<body class="bg-background-dark font-display text-slate-100 min-h-screen">
+<div class="relative flex min-h-screen w-full flex-col bg-background-dark overflow-x-hidden">
+
+  <header class="flex items-center justify-between border-b border-slate-800 px-10 py-4 bg-white/5 backdrop-blur-md sticky top-0 z-10">
+    <div class="flex items-center gap-8">
+      <a class="flex items-center gap-4" href="rooms.html">
+        <div class="size-8 bg-primary rounded-lg flex items-center justify-center">
+          <span class="material-symbols-outlined text-white">shield_person</span>
+        </div>
+        <h2 class="text-xl font-bold tracking-tight">AnonChat</h2>
+      </a>
+      <nav class="hidden md:flex items-center gap-6">
+        <a class="text-sm font-medium hover:text-primary transition-colors" href="rooms.html">Explore</a>
+        <a class="text-sm font-medium text-primary" href="#">Create Room</a>
+      </nav>
+    </div>
+    <div class="flex items-center gap-3">
+      <span id="header-username" class="text-sm text-slate-400 font-mono">—</span>
+      <a href="rooms.html" class="text-slate-400 hover:text-white transition-colors text-sm">← Back to Rooms</a>
+    </div>
+  </header>
+
+  <main class="flex-1 p-8 flex flex-col items-center justify-center relative">
+    <div class="absolute inset-0 z-0 opacity-20 pointer-events-none">
+      <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/30 rounded-full blur-[120px]"></div>
+      <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px]"></div>
+    </div>
+
+    <div class="glass-panel w-full max-w-5xl rounded-xl overflow-hidden shadow-2xl relative z-10 flex flex-col md:flex-row">
+      <!-- Form -->
+      <div class="flex-1 p-8 border-r border-white/10">
+        <div class="mb-8">
+          <h1 class="text-3xl font-bold mb-2">Create Custom Room</h1>
+          <p class="text-slate-400">Set up your private space in the anonymous network.</p>
+        </div>
+
+        <form id="create-room-form" onsubmit="createRoom(event)" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="text-sm font-semibold text-slate-300">Room Name *</label>
+              <input id="room-name" required maxlength="80" oninput="updatePreview()" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-white placeholder:text-slate-600" placeholder="e.g. Midnight Philosophy"/>
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm font-semibold text-slate-300">Category</label>
+              <select id="room-category" oninput="updatePreview()" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none cursor-pointer text-white">
+                <option>General Discussion</option>
+                <option>Technology</option>
+                <option>Gaming</option>
+                <option>Music</option>
+                <option>Politics</option>
+                <option>Science</option>
+                <option>Random</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-slate-300">Topic / Description *</label>
+            <textarea id="room-description" required maxlength="300" oninput="updatePreview()" rows="3" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none text-white placeholder:text-slate-600" placeholder="What should people expect in this room?"></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="text-sm font-semibold text-slate-300">Max Users Limit</label>
+              <div class="flex items-center gap-4">
+                <input id="max-users" type="range" min="2" max="100" value="25" oninput="document.getElementById('max-users-val').textContent = this.value; updatePreview()" class="flex-1 accent-primary"/>
+                <span id="max-users-val" class="bg-slate-800 px-3 py-1 rounded text-sm font-mono text-primary">25</span>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm font-semibold text-slate-300">Tags (comma separated)</label>
+              <input id="room-tags" oninput="updatePreview()" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-white placeholder:text-slate-600" placeholder="privacy, anon, debate"/>
+            </div>
+          </div>
+
+          <!-- Private toggle -->
+          <div class="p-4 bg-primary/5 rounded-xl border border-primary/20 space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary">lock</span>
+                <div>
+                  <p class="font-medium">Private Room</p>
+                  <p class="text-xs text-slate-400">Require a password to join</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input id="is-private" type="checkbox" onchange="togglePassword()" class="sr-only peer"/>
+                <div class="w-11 h-6 bg-slate-700 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </label>
+            </div>
+            <div id="password-section" class="hidden flex gap-4">
+              <input id="room-password" type="password" class="flex-1 bg-slate-900/80 border border-primary/30 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary outline-none transition-all text-sm text-white" placeholder="Room Password"/>
+              <button type="button" onclick="generatePassword()" class="px-4 py-2 bg-slate-800 rounded-lg text-xs font-semibold hover:bg-slate-700 transition-colors">Generate</button>
+            </div>
+          </div>
+
+          <div id="form-error" class="hidden text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg py-3 px-4"></div>
+
+          <button type="submit" id="create-btn" class="w-full py-4 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg neon-glow transition-all flex items-center justify-center gap-2 text-lg">
+            <span class="material-symbols-outlined">add_circle</span>
+            <span id="create-btn-text">Create Room</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Live Preview -->
+      <div class="w-full md:w-80 bg-slate-900/40 p-8 flex flex-col items-center">
+        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-6 w-full text-center">Live Preview</h3>
+        <div class="w-full bg-slate-800 rounded-2xl overflow-hidden shadow-xl border border-white/5 group">
+          <div class="h-32 bg-gradient-to-br from-primary/40 to-purple-600/40 relative flex items-center justify-center">
+            <span class="material-symbols-outlined text-5xl text-white/50 group-hover:scale-110 transition-transform">chat_bubble</span>
+            <div class="absolute top-3 right-3 bg-black/50 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-white flex items-center gap-1">
+              <span class="size-1.5 bg-green-500 rounded-full"></span> LIVE
+            </div>
+          </div>
+          <div class="p-5 space-y-3">
+            <div>
+              <h4 id="preview-name" class="font-bold text-lg leading-tight">Your Room Name</h4>
+              <span id="preview-category" class="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-bold uppercase">General Discussion</span>
+            </div>
+            <p id="preview-desc" class="text-xs text-slate-400 line-clamp-2">Your description will appear here...</p>
+            <div class="flex items-center justify-between pt-2 border-t border-white/5">
+              <div class="text-xs text-slate-400">0 / <span id="preview-max">25</span> users</div>
+            </div>
+            <div id="preview-tags" class="flex flex-wrap gap-1"></div>
+          </div>
+        </div>
+        <div class="mt-8 p-4 bg-slate-800/50 rounded-xl border border-white/5 w-full">
+          <p class="text-[11px] text-slate-400 text-center italic">"Your room will be visible to everyone on the explorer page unless set to private."</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="p-8 text-center text-slate-500 text-sm">
+    © 2025 AnonChat Network. Encrypted &amp; Anonymous.
+  </footer>
+</div>
+
+<script>
+  const API = 'http://localhost:8080';
+
+  function updatePreview() {
+    document.getElementById('preview-name').textContent = document.getElementById('room-name').value || 'Your Room Name';
+    document.getElementById('preview-desc').textContent = document.getElementById('room-description').value || 'Your description will appear here...';
+    document.getElementById('preview-category').textContent = document.getElementById('room-category').value;
+    document.getElementById('preview-max').textContent = document.getElementById('max-users').value;
+    const tags = document.getElementById('room-tags').value.split(',').map(t => t.trim()).filter(Boolean);
+    document.getElementById('preview-tags').innerHTML = tags.map(t => `<span class="text-[9px] text-slate-500">#${t}</span>`).join('');
+  }
+
+  function togglePassword() {
+    const section = document.getElementById('password-section');
+    section.classList.toggle('hidden', !document.getElementById('is-private').checked);
+    if (!document.getElementById('is-private').checked) section.classList.add('hidden');
+    else section.classList.remove('hidden');
+  }
+
+  function generatePassword() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+    document.getElementById('room-password').value = Array.from({length: 12}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  }
+
+  async function createRoom(e) {
+    e.preventDefault();
+    const btn = document.getElementById('create-btn');
+    const btnText = document.getElementById('create-btn-text');
+    const errorDiv = document.getElementById('form-error');
+    errorDiv.classList.add('hidden');
+
+    const payload = {
+      name: document.getElementById('room-name').value.trim(),
+      description: document.getElementById('room-description').value.trim(),
+      category: document.getElementById('room-category').value,
+      maxUsers: parseInt(document.getElementById('max-users').value),
+      isPrivate: document.getElementById('is-private').checked,
+      password: document.getElementById('room-password')?.value || null,
+      tags: document.getElementById('room-tags').value.split(',').map(t => t.trim()).filter(Boolean),
+    };
+
+    btn.disabled = true;
+    btnText.textContent = 'Creating...';
+
+    try {
+      const token = sessionStorage.getItem('token');
+      if (!token || token === 'offline-demo') throw new Error('offline');
+
+      const res = await fetch(API + '/api/v1/rooms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || 'Failed to create room');
+      }
+
+      const json = await res.json();
+      // Backend: ApiResponse<RoomResponse> — unwrap .data
+      const room = json.data || json;
+      sessionStorage.setItem('currentRoomId', room.id);
+      sessionStorage.setItem('currentRoomName', room.name);
+      window.location.href = `chat.html?roomId=${room.id}&roomName=${encodeURIComponent(room.name)}`;
+
+    } catch (err) {
+      if (err.message === 'offline') {
+        // Demo mode — create a fake room
+        const fakeId = Date.now();
+        sessionStorage.setItem('currentRoomId', fakeId);
+        sessionStorage.setItem('currentRoomName', payload.name);
+        window.location.href = `chat.html?roomId=${fakeId}&roomName=${encodeURIComponent(payload.name)}`;
+      } else {
+        errorDiv.textContent = err.message;
+        errorDiv.classList.remove('hidden');
+        btn.disabled = false;
+        btnText.textContent = 'Create Room';
+      }
+    }
+  }
+
+  if (!sessionStorage.getItem('token')) {
+    window.location.href = 'identity.html';
+  } else {
+    document.getElementById('header-username').textContent = sessionStorage.getItem('username') || '—';
+  }
+</script>
+</body>
+</html>
